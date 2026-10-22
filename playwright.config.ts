@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
+import { authFile } from './test-data/users';
 
 /**
  * Read environment variables from file.
@@ -26,15 +27,28 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
-    // baseURL: 'http://localhost:3000',
-
+    baseURL: 'https://www.saucedemo.com',
+     testIdAttribute: 'data-test',
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
   },
 
   /* Configure projects for major browsers */
   projects: [
+
+    // Logs in once through the UI and saves the session for every other test
     {
+      name: 'setup',
+      testMatch: /auth\.setup\.ts/,
+    },
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'], storageState: authFile },
+      dependencies: ['setup'],
+      testIgnore: /auth\.setup\.ts/,
+  },
+/*     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
@@ -47,7 +61,7 @@ export default defineConfig({
     {
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
-    },
+    }, */
 
     /* Test against mobile viewports. */
     // {
