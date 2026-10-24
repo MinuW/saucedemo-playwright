@@ -50,5 +50,6 @@ export class InventoryPage {
 
   async openProduct(productName: string) {
     await this.itemNames.filter({ hasText: productName }).first().click();
+    await this.page.getByTestId('back-to-products').waitFor();
   }
 }
